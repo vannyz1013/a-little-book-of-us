@@ -1,0 +1,309 @@
+.page--letter {
+  padding-top: 0;
+  text-align: center;
+}
+
+.bunting {
+  width: min(100%, 60rem);
+  margin: 0 auto;
+}
+
+.page--letter .page-heading {
+  margin-top: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.closed-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Scene: envelope in the middle, flowers and the cake gathered around it. */
+.scene {
+  position: relative;
+  width: min(100%, 52rem);
+  padding: 2.5rem 0 4.5rem;
+}
+
+.scene__flowers {
+  position: absolute;
+  bottom: 0;
+  width: 40%;
+  pointer-events: none;
+}
+
+.scene__flowers--left {
+  left: -4%;
+}
+
+.scene__flowers--right {
+  top: 0;
+  right: -4%;
+  bottom: auto;
+  width: 34%;
+  transform: scaleY(-1);
+}
+
+.scene__cake {
+  position: absolute;
+  z-index: 2;
+  right: 3%;
+  bottom: -2%;
+  width: 28%;
+}
+
+.envelope {
+  position: relative;
+  z-index: 1;
+  width: min(68%, 30rem);
+  aspect-ratio: 3 / 2;
+  margin: 0 auto;
+  perspective: 900px;
+  filter: drop-shadow(0 12px 18px rgb(92 80 60 / 0.22));
+}
+
+.envelope__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.envelope__sheet {
+  position: absolute;
+  z-index: 1;
+  top: 8%;
+  right: 7%;
+  bottom: 6%;
+  left: 7%;
+  background: var(--paper);
+  box-shadow: 0 -2px 8px rgb(92 80 60 / 0.15);
+  transition: transform 1s cubic-bezier(0.3, 0, 0.2, 1) 0.85s;
+}
+
+.envelope__pocket {
+  z-index: 2;
+}
+
+.envelope__flap {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  transform-origin: top center;
+  /* Past vertical, the flap drops behind the rising letter. */
+  transition: transform 0.85s ease-in-out, z-index 0s linear 0.42s;
+}
+
+.envelope__seal {
+  position: absolute;
+  top: 62.5%;
+  left: 50%;
+  width: 13%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 2px 3px rgb(92 80 60 / 0.3));
+  transition: opacity 0.25s ease;
+}
+
+.envelope__to {
+  position: absolute;
+  z-index: 4;
+  right: 22%;
+  bottom: 11%;
+  left: 22%;
+  font-family: var(--hand);
+  font-size: clamp(1.15rem, 3.8vw, 1.6rem);
+  line-height: 1.1;
+  text-align: center;
+  transition: opacity 0.25s ease;
+}
+
+.page--letter.is-opening .envelope__flap {
+  z-index: 0;
+  transform: rotateX(180deg);
+}
+
+.page--letter.is-opening .envelope__seal,
+.page--letter.is-opening .envelope__to {
+  opacity: 0;
+}
+
+.page--letter.is-opening .envelope__sheet {
+  transform: translateY(-58%);
+}
+
+.page--letter.is-opening .btn {
+  visibility: hidden;
+}
+
+/* Clear the way: the letter rises through the space the heading occupied. */
+.page--letter .page-heading {
+  transition: opacity 0.4s ease;
+}
+
+.page--letter.is-opening .page-heading {
+  opacity: 0;
+}
+
+.open-view {
+  display: none;
+}
+
+.page--letter.is-open .closed-view,
+.page--letter.is-open .letter-prompt {
+  display: none;
+}
+
+.page--letter.is-open .open-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.letter {
+  position: relative;
+  width: min(100%, 38rem);
+  padding: clamp(2rem, 6vw, 3.25rem) clamp(1.25rem, 6vw, 3.25rem) clamp(1.75rem, 5vw, 2.75rem);
+  overflow: hidden;
+  background: var(--paper);
+  box-shadow: var(--shadow-soft);
+  text-align: left;
+  animation: letter-rise 0.8s ease both;
+}
+
+.letter__sprig {
+  position: absolute;
+  top: -0.4rem;
+  right: -2rem;
+  width: 11rem;
+  opacity: 0.75;
+  transform: scaleY(-1);
+  pointer-events: none;
+}
+
+.letter__greeting {
+  position: relative;
+  margin-bottom: 1rem;
+  padding-right: 4.5rem;
+  font-size: clamp(1.7rem, 5vw, 2.2rem);
+}
+
+.letter__paragraph {
+  margin-top: 0.9rem;
+  font-size: 1.08rem;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+
+.letter__signoff {
+  margin-top: 1.75rem;
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-style: italic;
+}
+
+.letter__signature {
+  font-family: var(--hand);
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.music {
+  animation: fade-up 0.6s ease both;
+}
+
+.music__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.music__button {
+  min-width: 5.25rem;
+  min-height: 2.75rem;
+  padding: 0.35rem 1.1rem;
+  border: 1.5px solid var(--sage);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: var(--paper);
+  color: var(--sage-ink);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.music__button:hover {
+  background: #eef1e6;
+}
+
+.music__button.is-primary {
+  background: var(--sage-ink);
+  color: var(--paper);
+}
+
+.music__status {
+  max-width: 26rem;
+  margin: 0.6rem auto 0;
+  font-size: 0.95rem;
+  color: var(--text-soft);
+}
+
+.music__status:empty {
+  display: none;
+}
+
+.finale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  animation: fade-up 0.9s ease 0.5s both;
+}
+
+.finale__message {
+  font-size: clamp(2.5rem, 9vw, 4rem);
+  color: var(--rose-ink);
+}
+
+.cake {
+  position: relative;
+  width: min(62vw, 16rem);
+}
+
+.flame {
+  position: absolute;
+  width: 5.2%;
+  aspect-ratio: 1 / 1.75;
+  border-radius: 50% 50% 46% 46% / 66% 66% 34% 34%;
+  background: radial-gradient(ellipse at 50% 72%, #fff6d6 0 26%, #f2d690 52%, #e3a46c 82%, rgb(217 140 110 / 0.75) 100%);
+  box-shadow: 0 0 0.9rem 0.3rem rgb(242 214 144 / 0.5);
+  transform: translate(-50%, -100%);
+  transform-origin: 50% 100%;
+  animation: flicker 2.6s ease-in-out var(--delay) infinite;
+}
+
+@media (max-width: 600px) {
+  .scene {
+    padding: 1.5rem 0 6.5rem;
+  }
+
+  .envelope {
+    width: 92%;
+  }
+
+  .scene__flowers {
+    width: 54%;
+  }
+
+  .scene__flowers--right {
+    display: none;
+  }
+
+  .scene__cake {
+    width: 38%;
+  }
+}

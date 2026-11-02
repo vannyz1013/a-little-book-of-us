@@ -1,0 +1,21 @@
+{
+  "name": "a-little-book-of-us",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/caveat": "^5.2.0",
+    "@fontsource/cormorant-garamond": "^5.2.0",
+    "@fontsource/nunito": "^5.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "vite": "^6.3.0"
+  }
+}

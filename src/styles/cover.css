@@ -1,0 +1,168 @@
+/* The nav is sticky above; pull the cover up underneath it. */
+.cover {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  margin-top: calc(var(--nav-height) * -1);
+  padding: calc(var(--nav-height) + 1.25rem) 1rem 0.75rem;
+  overflow: clip;
+}
+
+.cover__garden,
+.cover__garden img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cover__garden img {
+  object-fit: cover;
+  object-position: center bottom;
+}
+
+.cover__content {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3svh, 1.75rem);
+}
+
+.book {
+  --book-height: clamp(19rem, 60svh, 33rem);
+  position: relative;
+  width: min(calc(var(--book-height) * 0.76), 82vw);
+  aspect-ratio: 0.76;
+  perspective: 1400px;
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.book__pages,
+.book__cover {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px 12px 12px 4px;
+}
+
+.book__pages {
+  background: var(--paper);
+  /* A few sheets of paper peeking out behind the cover. */
+  box-shadow:
+    3px 3px 0 #f1ead9,
+    6px 6px 0 #e6dcc7,
+    0 22px 44px rgb(72 62 44 / 0.34);
+}
+
+.book__sprig {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  width: 62%;
+}
+
+.book__cover {
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.45, 0.05, 0.3, 1);
+}
+
+.book__front,
+.book__inside {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  backface-visibility: hidden;
+}
+
+.book__front {
+  overflow: hidden;
+  box-shadow: inset 7px 0 10px -6px rgb(60 70 50 / 0.45);
+}
+
+/* The inside of the cover, seen once it swings past halfway. */
+.book__inside {
+  background: #e4e9da;
+  box-shadow: inset 0 0 0 0.6rem var(--paper);
+  transform: rotateY(180deg);
+}
+
+.book__art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.book__title {
+  position: absolute;
+  inset: 22% 22%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  text-align: center;
+  container-type: inline-size;
+}
+
+.book__title h1 {
+  font-size: 17.5cqw;
+  color: var(--text);
+}
+
+.book__title p {
+  font-family: var(--serif);
+  font-size: 7.6cqw;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--text-soft);
+}
+
+.cover__footer {
+  position: relative;
+  margin-top: 0.6rem;
+  padding: 0.1rem 1rem;
+  border-radius: 999px;
+  background: rgb(255 253 247 / 0.86);
+  font-family: var(--hand);
+  font-size: 1.35rem;
+  color: var(--text);
+}
+
+/* Slide the spine to the centre, so the whole open book stays on screen. */
+.cover.is-opening .book {
+  transform: translateX(52.5%) scale(1.05);
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .cover.is-opening .book {
+    transform: translateX(29%) scale(0.58);
+  }
+}
+
+.cover.is-opening .book__cover {
+  transform: rotateY(-165deg);
+}
+
+.cover.is-opening .btn,
+.cover.is-opening .cover__footer {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* The page fades to paper as the book opens, ready for the Memories page. */
+.cover.is-opening::after {
+  content: '';
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: var(--background);
+  animation: page-in 0.5s ease 1s both;
+  pointer-events: none;
+}
