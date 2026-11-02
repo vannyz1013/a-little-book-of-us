@@ -4,7 +4,7 @@
 }
 
 .bunting {
-  width: min(100%, 60rem);
+  width: min(100%, 44rem);
   margin: 0 auto;
 }
 
@@ -61,7 +61,7 @@
   aspect-ratio: 3 / 2;
   margin: 0 auto;
   perspective: 900px;
-  filter: drop-shadow(0 12px 18px rgb(92 80 60 / 0.22));
+  filter: drop-shadow(0 12px 18px rgb(85 86 107 / 0.22));
 }
 
 .envelope__layer {
@@ -79,7 +79,7 @@
   bottom: 6%;
   left: 7%;
   background: var(--paper);
-  box-shadow: 0 -2px 8px rgb(92 80 60 / 0.15);
+  box-shadow: 0 -2px 8px rgb(85 86 107 / 0.15);
   transition: transform 1s cubic-bezier(0.3, 0, 0.2, 1) 0.85s;
 }
 
@@ -102,7 +102,7 @@
   left: 50%;
   width: 13%;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 2px 3px rgb(92 80 60 / 0.3));
+  filter: drop-shadow(0 2px 3px rgb(85 86 107 / 0.3));
   transition: opacity 0.25s ease;
 }
 
@@ -201,7 +201,6 @@
   margin-top: 1.75rem;
   font-family: var(--serif);
   font-size: 1.25rem;
-  font-style: italic;
 }
 
 .letter__signature {
@@ -225,10 +224,10 @@
   min-width: 5.25rem;
   min-height: 2.75rem;
   padding: 0.35rem 1.1rem;
-  border: 1.5px solid var(--sage);
+  border: 1.5px solid var(--lavender);
   border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   background: var(--paper);
-  color: var(--sage-ink);
+  color: var(--accent-ink);
   font-family: var(--serif);
   font-size: 1.15rem;
   font-weight: 600;
@@ -237,12 +236,12 @@
 }
 
 .music__button:hover {
-  background: #eef1e6;
+  background: var(--pale-lavender);
 }
 
 .music__button.is-primary {
-  background: var(--sage-ink);
-  color: var(--paper);
+  background: var(--lavender);
+  color: var(--on-lavender);
 }
 
 .music__status {
@@ -266,7 +265,7 @@
 
 .finale__message {
   font-size: clamp(2.5rem, 9vw, 4rem);
-  color: var(--rose-ink);
+  color: var(--accent-ink);
 }
 
 .cake {
@@ -279,8 +278,8 @@
   width: 5.2%;
   aspect-ratio: 1 / 1.75;
   border-radius: 50% 50% 46% 46% / 66% 66% 34% 34%;
-  background: radial-gradient(ellipse at 50% 72%, #fff6d6 0 26%, #f2d690 52%, #e3a46c 82%, rgb(217 140 110 / 0.75) 100%);
-  box-shadow: 0 0 0.9rem 0.3rem rgb(242 214 144 / 0.5);
+  background: radial-gradient(ellipse at 50% 72%, #fffbe8 0 30%, #f6e6b4 58%, #e9c9a0 86%, rgb(226 190 170 / 0.7) 100%);
+  box-shadow: 0 0 0.8rem 0.25rem rgb(246 230 180 / 0.45);
   transform: translate(-50%, -100%);
   transform-origin: 50% 100%;
   animation: flicker 2.6s ease-in-out var(--delay) infinite;

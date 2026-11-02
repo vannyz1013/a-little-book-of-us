@@ -10,8 +10,8 @@
   margin: 0 auto;
   padding: 0 0.5rem;
   border-radius: 0 0 1.1rem 1.1rem;
-  background: rgb(255 253 247 / 0.88);
-  box-shadow: 0 4px 16px rgb(92 80 60 / 0.1);
+  background: rgb(247 247 243 / 0.88);
+  box-shadow: 0 4px 16px rgb(85 86 107 / 0.1);
   backdrop-filter: blur(4px);
 }
 
@@ -32,12 +32,11 @@
 }
 
 .book-nav__link:hover {
-  color: var(--rose-ink);
+  color: var(--accent-ink);
 }
 
 .book-nav__link[aria-current='page'] {
-  color: var(--rose-ink);
-  box-shadow: 0 2px 0 -0.5px var(--rose);
+  box-shadow: 0 3px 0 -0.5px var(--lavender);
 }
 
 .page-turn {
@@ -55,7 +54,7 @@
   align-items: center;
   gap: 0.4em;
   min-height: 2.75rem;
-  color: var(--sage-ink);
+  color: var(--accent-ink);
   font-family: var(--serif);
   font-size: 1.3rem;
   font-weight: 600;
@@ -64,5 +63,5 @@
 }
 
 .page-turn__link:hover {
-  color: var(--rose-ink);
+  color: var(--accent-ink);
 }

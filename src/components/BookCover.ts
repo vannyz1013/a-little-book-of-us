@@ -35,8 +35,10 @@ export function createBookCover(): { element: HTMLElement; onEnter: () => void }
       'picture',
       { class: 'cover__garden' },
       h('source', { media: '(min-aspect-ratio: 1/1)', srcset: asset('images/cover/garden-wide.webp') }),
-      h('img', { src: asset('images/cover/garden-tall.webp'), alt: 'A watercolour garden of daisies, roses and lavender under a soft sky' }),
+      h('img', { src: asset('images/cover/garden-tall.webp'), alt: 'A watercolour garden of lavender, blue wildflowers and white daisies under a soft sky' }),
     ),
+    paint('images/decorations/butterfly-lavender.webp', 'cover__butterfly cover__butterfly--lavender'),
+    paint('images/decorations/butterfly-blue.webp', 'cover__butterfly cover__butterfly--blue'),
     h('div', { class: 'cover__content' }, book, open),
     h('footer', { class: 'cover__footer' }, 'Made with love, just for you.'),
   );

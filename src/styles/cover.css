@@ -54,9 +54,9 @@
   background: var(--paper);
   /* A few sheets of paper peeking out behind the cover. */
   box-shadow:
-    3px 3px 0 #f1ead9,
-    6px 6px 0 #e6dcc7,
-    0 22px 44px rgb(72 62 44 / 0.34);
+    3px 3px 0 #f0edf7,
+    6px 6px 0 #e2deee,
+    0 18px 36px rgb(85 86 107 / 0.2);
 }
 
 .book__sprig {
@@ -82,12 +82,12 @@
 
 .book__front {
   overflow: hidden;
-  box-shadow: inset 7px 0 10px -6px rgb(60 70 50 / 0.45);
+  box-shadow: inset 7px 0 10px -6px rgb(85 86 107 / 0.3);
 }
 
 /* The inside of the cover, seen once it swings past halfway. */
 .book__inside {
-  background: #e4e9da;
+  background: var(--pale-lavender);
   box-shadow: inset 0 0 0 0.6rem var(--paper);
   transform: rotateY(180deg);
 }
@@ -129,7 +129,7 @@
   margin-top: 0.6rem;
   padding: 0.1rem 1rem;
   border-radius: 999px;
-  background: rgb(255 253 247 / 0.86);
+  background: rgb(247 247 243 / 0.86);
   font-family: var(--hand);
   font-size: 1.35rem;
   color: var(--text);
@@ -165,4 +165,36 @@
   background: var(--background);
   animation: page-in 0.5s ease 1s both;
   pointer-events: none;
+}
+
+/* Two butterflies drift in the sky, clear of the book. */
+.cover__butterfly {
+  position: absolute;
+  width: clamp(2rem, 4vw, 3.25rem);
+  animation: drift 11s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.cover__butterfly--lavender {
+  top: 20%;
+  left: 13%;
+}
+
+.cover__butterfly--blue {
+  top: 36%;
+  right: 12%;
+  animation-duration: 14s;
+  animation-delay: -5s;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .cover__butterfly--lavender {
+    top: 10%;
+    left: 8%;
+  }
+
+  .cover__butterfly--blue {
+    top: 12%;
+    right: 9%;
+  }
 }

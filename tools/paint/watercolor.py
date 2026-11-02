@@ -17,7 +17,7 @@ def hex_rgb(value):
     return tuple(int(value[i : i + 2], 16) / 255 for i in (0, 2, 4))
 
 
-PAPER = hex_rgb("#FFFDF7")
+PAPER = hex_rgb("#FCFCFA")
 
 
 def smooth(ctrl, closed=True, steps=6):
@@ -182,9 +182,10 @@ class Canvas:
     def lift(self, pts, amount=0.9, soft=2.0):
         """Reserve the paper under a shape, as a painter paints around a bloom."""
         pts = np.asarray(pts, dtype=np.float32)
-        x0, y0 = np.maximum(np.floor(pts.min(0)).astype(int) - 6, 0)
-        x1 = min(int(pts[:, 0].max()) + 7, self.w)
-        y1 = min(int(pts[:, 1].max()) + 7, self.h)
+        margin = int(soft * 3) + 6  # Room for the blur, or it ends in a hard edge.
+        x0, y0 = np.maximum(np.floor(pts.min(0)).astype(int) - margin, 0)
+        x1 = min(int(pts[:, 0].max()) + margin + 1, self.w)
+        y1 = min(int(pts[:, 1].max()) + margin + 1, self.h)
         if x1 <= x0 or y1 <= y0:
             return
         image = Image.new("L", (x1 - x0, y1 - y0), 0)

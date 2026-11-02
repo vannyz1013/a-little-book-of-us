@@ -42,6 +42,18 @@
   }
 }
 
+@keyframes drift {
+  from {
+    transform: translate(0, 0) rotate(-6deg);
+  }
+  50% {
+    transform: translate(1.5rem, -1rem) rotate(4deg);
+  }
+  to {
+    transform: translate(3rem, 0.5rem) rotate(-3deg);
+  }
+}
+
 .page-enter {
   animation: page-in 0.5s ease both;
 }
@@ -68,7 +80,8 @@
     transition-delay: 0ms !important;
   }
 
-  .flame {
+  .flame,
+  .cover__butterfly {
     animation: none;
   }
 }

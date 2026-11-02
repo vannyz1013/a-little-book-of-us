@@ -23,17 +23,18 @@
 
 /* The paper is a pseudo-element, so clipping its corner can't clip the shadow. */
 .note {
-  --tilt: -1.4deg;
+  --tilt: -0.5deg;
   position: relative;
   isolation: isolate;
   flex: 1 1 15rem;
   max-width: 19rem;
   min-height: 8rem;
   padding: 1.25rem 1.35rem 1rem;
-  filter: drop-shadow(0 6px 10px rgb(92 80 60 / 0.16));
-  font-family: var(--hand);
-  font-size: 1.5rem;
-  line-height: 1.25;
+  filter: drop-shadow(0 5px 9px rgb(85 86 107 / 0.1));
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.3;
   transform: rotate(var(--tilt));
 }
 
@@ -42,18 +43,18 @@
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: var(--note-paper, var(--paper));
+  background: var(--note-paper, var(--pale-lavender));
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 1.4rem), calc(100% - 1.4rem) 100%, 0 100%);
 }
 
 .note--1 {
-  --tilt: 1deg;
-  --note-paper: #fdf1ec;
+  --tilt: 0.4deg;
+  --note-paper: var(--pale-blue);
 }
 
 .note--2 {
-  --tilt: -0.4deg;
-  --note-paper: #f1f4e9;
+  --tilt: -0.2deg;
+  --note-paper: var(--pale-mint);
 }
 
 .note:hover {
