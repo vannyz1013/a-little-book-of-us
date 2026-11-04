@@ -1,0 +1,683 @@
+.world,
+.world-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.world {
+  background: var(--pale-lavender);
+}
+
+.world-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+
+.world-loading {
+  position: absolute;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--pale-lavender);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 600;
+  transition: opacity 0.8s ease;
+}
+
+/* A single soft light, breathing gently, says that the world is on its way. */
+.world-loading {
+  grid-auto-flow: row;
+  align-content: center;
+  gap: 1.1rem;
+}
+
+.world-loading::after {
+  content: '';
+  justify-self: center;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--lavender);
+  box-shadow: 0 0 14px 4px rgb(200 188 232 / 0.7);
+  animation: loading-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes loading-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.75);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .world-loading::after {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
+.world-loading.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Actual Three.js character review; kept on a dedicated query route. */
+#app.character-review {
+  background: #ece5f5;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.character-review__stage {
+  position: absolute;
+  inset: 0 0 max(9.4rem, 20vh);
+}
+
+.character-review__header {
+  position: absolute;
+  z-index: 5;
+  top: max(0.85rem, env(safe-area-inset-top));
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #514264;
+  pointer-events: none;
+  text-shadow: 0 1px 14px rgb(255 255 255 / 0.9);
+}
+
+.character-review__header h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  line-height: 1;
+}
+
+.character-review__header p {
+  margin-top: 0.2rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.character-review__views {
+  position: absolute;
+  z-index: 6;
+  right: max(0.8rem, env(safe-area-inset-right));
+  bottom: max(0.8rem, env(safe-area-inset-bottom));
+  left: max(0.8rem, env(safe-area-inset-left));
+  width: min(84rem, calc(100% - 1.6rem));
+  max-height: min(19vh, 9rem);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0.4rem;
+  padding: 0.55rem;
+  border: 1px solid rgb(114 97 145 / 0.18);
+  border-radius: 1.1rem;
+  background: rgb(255 253 255 / 0.82);
+  box-shadow: 0 8px 30px rgb(59 41 80 / 0.12);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.character-review__views button {
+  min-height: 2.65rem;
+  min-width: 0;
+  width: 100%;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  color: #5d4d71;
+  font: 600 0.78rem/1.1 var(--ui);
+  text-wrap: balance;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.character-review__select {
+  display: none;
+}
+
+.character-review__views button[aria-pressed='true'] {
+  border-color: rgb(171 145 203 / 0.45);
+  background: #eee5f8;
+  color: #4b3a61;
+}
+
+.character-review__views button:focus-visible {
+  outline: 2px solid #8064a7;
+  outline-offset: 2px;
+}
+
+.character-review__footer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 620px) {
+  .character-review__stage {
+    inset: 0 0 5.5rem;
+  }
+
+  .character-review__views {
+    right: max(0.6rem, env(safe-area-inset-right));
+    bottom: max(0.6rem, env(safe-area-inset-bottom));
+    left: max(0.6rem, env(safe-area-inset-left));
+    display: block;
+    width: auto;
+    max-height: none;
+    padding: 0.45rem;
+    overflow: visible;
+  }
+
+  .character-review__views button {
+    display: none;
+  }
+
+  .character-review__select {
+    display: block;
+    width: 100%;
+    min-height: 2.85rem;
+    padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+    border: 1px solid rgb(171 145 203 / 0.45);
+    border-radius: 0.7rem;
+    background: #fffaff;
+    color: #4b3a61;
+    font: 600 0.88rem/1.1 var(--ui);
+    font-size: 0.82rem;
+  }
+
+}
+
+.world-veil {
+  position: absolute;
+  z-index: 15;
+  inset: 0;
+  background: var(--background);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.world-veil.is-on {
+  opacity: 1;
+}
+
+.world .book-nav {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: min(100%, 40rem);
+  transform: translateX(-50%);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The heads-up layer lets the pointer through to the world, except on its controls. */
+.hud {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(var(--nav-height) + 0.75rem) var(--gutter) max(0.75rem, env(safe-area-inset-bottom));
+  pointer-events: none;
+}
+
+.hud a,
+.hud button,
+.hud .music {
+  pointer-events: auto;
+}
+
+.hud__heading {
+  text-align: center;
+}
+
+.hud__heading h1 {
+  font-size: clamp(1.9rem, 5vw, 2.8rem);
+  text-shadow: 0 1px 14px rgb(247 247 243 / 0.9);
+}
+
+.hud__heading p {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-shadow: 0 1px 10px rgb(247 247 243 / 0.95);
+}
+
+.hud__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.hud--home {
+  justify-content: flex-end;
+}
+
+.hud__signature {
+  padding: 0.05rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(247 247 243 / 0.82);
+  font-family: var(--hand);
+  font-size: 1.25rem;
+}
+
+.hud .page-turn {
+  width: 100%;
+  margin: 0;
+  pointer-events: none;
+}
+
+.hud .page-turn__link {
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  background: rgb(247 247 243 / 0.86);
+  color: var(--accent-ink);
+  font-size: 1.15rem;
+}
+
+.hud__hint {
+  padding: 0.2rem 1rem;
+  border-radius: 999px;
+  background: rgb(247 247 243 / 0.88);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.hud__music .music {
+  padding: 0.35rem 0.5rem;
+  border-radius: 1rem;
+  background: rgb(247 247 243 / 0.82);
+}
+
+.hud__music:empty {
+  display: none;
+}
+
+/* Phones held sideways: wide but very short, so the controls share one row and the cake stays clear. */
+@media (min-aspect-ratio: 23/20) and (max-height: 500px) {
+  .hud--letter .hud__foot {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .hud--letter .hud__foot .page-turn {
+    order: -1;
+    width: auto;
+    margin-right: auto;
+  }
+
+  /* The empty "next" slot would only take up room in the row. */
+  .hud--letter .hud__foot .page-turn > span:empty {
+    display: none;
+  }
+
+  .hud--letter .page-turn__link {
+    font-size: 1rem;
+  }
+
+  .hud--letter .hud__foot > .btn {
+    min-height: 2.75rem;
+    padding: 0.45rem 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .hud--letter .hud__foot > .btn:last-of-type {
+    margin-right: auto;
+  }
+
+  .hud--letter .music__buttons {
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+  }
+
+  .hud--letter .music__button {
+    min-width: 4.25rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Reading panels */
+.panel {
+  width: min(38rem, 100vw - 2rem);
+  max-height: calc(100dvh - 2rem);
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+  color: var(--text);
+  box-shadow: 0 20px 56px rgb(85 86 107 / 0.28);
+  overflow: auto;
+}
+
+.panel[open] {
+  animation: letter-rise 0.5s ease both;
+}
+
+.panel::backdrop {
+  background: rgb(85 86 107 / 0.3);
+}
+
+.panel__close {
+  display: block;
+  position: sticky;
+  bottom: 0.75rem;
+  min-height: 2.75rem;
+  margin: 0.75rem auto 0.9rem;
+  padding: 0 1.25rem;
+  border: 1.5px solid var(--lavender);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--accent-ink);
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.panel__close:hover {
+  background: var(--pale-lavender);
+}
+
+/* The scene's own controls step back while a letter or photo is open over it. */
+.world.is-reading .hud {
+  visibility: hidden;
+}
+
+.letter-panel {
+  width: min(40rem, 100vw - 1.5rem);
+  padding: 1rem 0 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.letter-panel .letter {
+  width: 100%;
+  animation: none;
+}
+
+/* The song's controls and the way back sit apart from the letter, on the backdrop. */
+.letter-panel__music {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.1rem;
+}
+
+.letter-panel__music .music {
+  padding: 0.4rem 0.55rem;
+  border-radius: 1rem;
+  background: rgb(247 247 243 / 0.9);
+}
+
+/* Keyboard and screen-reader twins of the 3D objects: unseen until focused. */
+.world-actions {
+  position: absolute;
+  z-index: 12;
+  top: calc(var(--nav-height) + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.world-actions__button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.world-actions__button:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border: 2px solid var(--accent-ink);
+  border-radius: 999px;
+  background: var(--paper);
+  clip-path: none;
+  white-space: normal;
+}
+
+/* The 3D surprise has its own calm, accessible layer while the scene plays. */
+.world.is-cinematic .book-nav,
+.world.is-cinematic .hud,
+.world.is-cinematic .world-actions {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.birthday-cinematic {
+  position: absolute;
+  z-index: 24;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(4.7rem, 11vh) max(0.8rem, env(safe-area-inset-right)) max(0.85rem, env(safe-area-inset-bottom)) max(0.8rem, env(safe-area-inset-left));
+  pointer-events: none;
+}
+
+.birthday-cinematic[hidden] {
+  display: none;
+}
+
+.birthday-cinematic__copy {
+  display: grid;
+  grid-template-rows: minmax(1.3rem, auto) minmax(3.05rem, auto) minmax(1.8rem, auto);
+  align-content: center;
+  gap: 0.12rem;
+  width: min(100%, 44rem);
+  min-height: 8.25rem;
+  padding: 0.65rem 1.2rem;
+  border: 1px solid transparent;
+  border-radius: 1.35rem;
+  background: transparent;
+  color: #4c3762;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-0.32rem);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(0);
+  backdrop-filter: blur(0);
+  transition: opacity 0.48s ease, transform 0.48s ease, background-color 0.48s ease, border-color 0.48s ease, box-shadow 0.48s ease, backdrop-filter 0.48s ease;
+  pointer-events: none;
+}
+
+.birthday-cinematic__copy.has-visible-message {
+  border-color: rgb(255 255 255 / 0.72);
+  background: linear-gradient(140deg, rgb(255 253 255 / 0.84), rgb(246 242 251 / 0.73));
+  opacity: 1;
+  transform: translateY(0);
+  box-shadow: 0 12px 30px rgb(67 47 86 / 0.11), inset 0 1px 0 rgb(255 255 255 / 0.78);
+  -webkit-backdrop-filter: blur(8px) saturate(112%);
+  backdrop-filter: blur(8px) saturate(112%);
+}
+
+.birthday-cinematic__message {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-wrap: balance;
+  opacity: 0;
+  transform: translateY(0.45rem);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+  font: 400 clamp(0.82rem, 1.15vw, 1rem)/1.3 var(--sans);
+  letter-spacing: 0.085em;
+}
+
+.birthday-cinematic__message--2 {
+  min-height: 1.15em;
+  color: #593d75;
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 3.15vw, 2.9rem);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 1.04;
+}
+
+.birthday-cinematic__message--3 {
+  color: #66537a;
+  font-family: var(--hand);
+  font-size: clamp(1.35rem, 2.15vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  line-height: 1.12;
+}
+
+.birthday-cinematic__message.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.birthday-cinematic__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.birthday-cinematic__button {
+  min-height: 2.8rem;
+  padding: 0.45rem 1.05rem;
+  border: 1px solid rgb(111 87 136 / 0.22);
+  border-radius: 999px;
+  background: rgb(255 252 255 / 0.86);
+  color: #59456f;
+  box-shadow: 0 5px 18px rgb(67 47 86 / 0.12);
+  font: 600 0.95rem/1 var(--ui);
+  cursor: pointer;
+}
+
+.birthday-cinematic__button--primary {
+  border-color: rgb(106 82 131 / 0.5);
+  background: #eee6f5;
+  color: #45315a;
+}
+
+.birthday-cinematic__button:hover {
+  background: #fff;
+}
+
+.birthday-cinematic__button:focus-visible {
+  outline: 2px solid #6e538d;
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .birthday-cinematic {
+    padding-top: max(4.2rem, 9vh);
+  }
+
+  .birthday-cinematic__copy {
+    grid-template-rows: minmax(1.1rem, auto) minmax(2.1rem, auto) minmax(1.55rem, auto);
+    gap: 0.08rem;
+    min-height: 7rem;
+    padding: 0.45rem 0.62rem;
+    border-radius: 1.05rem;
+  }
+
+  .birthday-cinematic__message--2 {
+    font-size: clamp(1.45rem, 7vw, 2.2rem);
+    line-height: 1.02;
+  }
+
+  .birthday-cinematic__message--3 {
+    font-size: clamp(1.35rem, 6vw, 1.6rem);
+  }
+
+  .birthday-cinematic__button {
+    min-height: 2.9rem;
+    padding-inline: 0.9rem;
+    font-size: 0.88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .birthday-cinematic__copy,
+  .birthday-cinematic__message {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Margin botanicals may overhang the paper, but the reading dialog must not pan sideways. */
+.letter-panel {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Keep the short-landscape page turn clear of the gift at the foot of the scene. */
+@media (min-aspect-ratio: 23/20) and (max-height: 500px) {
+  .hud--letter .hud__foot .page-turn {
+    position: absolute;
+    top: calc(var(--nav-height) + 0.5rem);
+    left: var(--gutter);
+    width: auto;
+    margin: 0;
+  }
+}
+
+
+/* On short screens, place the close action after the letter so it cannot cover the text. */
+@media (max-height: 680px) {
+  .letter-panel > .panel__close {
+    position: static;
+  }
+}
+
+/* Make letter and scene controls easy to tap on phones without changing desktop sizing. */
+@media (pointer: coarse) {
+  .book-nav__link,
+  .world .page-turn__link,
+  .world .btn,
+  .world .music__button,
+  .world .panel__close,
+  .page--letter .btn,
+  .page--letter .page-turn__link,
+  .page--letter .music__button {
+    min-height: 48px;
+  }
+}

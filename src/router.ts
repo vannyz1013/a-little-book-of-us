@@ -1,10 +1,9 @@
-export const pages = ['home', 'memories', 'things', 'letter'] as const;
+export const pages = ['home', 'memories', 'letter'] as const;
 export type PageId = (typeof pages)[number];
 
 export const pageTitles: Record<PageId, string> = {
   home: 'Home',
   memories: 'Our Memories',
-  things: 'Little Things',
   letter: 'Birthday Letter',
 };
 

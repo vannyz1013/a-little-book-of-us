@@ -104,6 +104,17 @@ button {
   transform: translateY(-1px);
 }
 
+/* With a mouse, buttons answer with a soft lavender glow. */
+@media (hover: hover) and (pointer: fine) {
+  .btn {
+    transition: transform 0.25s ease, background-color 0.25s ease, box-shadow 0.3s ease;
+  }
+
+  .btn:hover:not(:disabled) {
+    box-shadow: var(--shadow-soft), 0 0 0 5px rgb(200 188 232 / 0.32), 0 0 22px rgb(200 188 232 / 0.45);
+  }
+}
+
 .btn:disabled {
   cursor: default;
 }

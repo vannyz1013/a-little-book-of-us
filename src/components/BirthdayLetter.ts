@@ -1,8 +1,8 @@
 import { h, paint, prefersReducedMotion } from '../dom';
 import { birthdayContent } from '../data/birthdayContent';
+import { createLetterSheet } from './LetterSheet';
 import { createMusicPlayer } from './MusicPlayer';
 import { createPageTurn } from './Nav';
-import { textWithTag } from './PlaceholderTag';
 
 // The flap lifts, then the letter rises out of the envelope.
 const OPENING_MS = 2000;
@@ -42,20 +42,7 @@ function createEnvelope(): HTMLElement {
   );
 }
 
-function createSheet(): HTMLElement {
-  const { greeting, paragraphs, signOff } = birthdayContent.letter;
-  return h(
-    'article',
-    { class: 'letter' },
-    paint('images/decorations/sprig-eucalyptus.webp', 'letter__sprig'),
-    textWithTag('h2', 'letter__greeting', greeting),
-    ...paragraphs.map((paragraph) => textWithTag('p', 'letter__paragraph', paragraph)),
-    h('p', { class: 'letter__signoff' }, signOff),
-    textWithTag('p', 'letter__signature', birthdayContent.senderName),
-  );
-}
-
-export function createBirthdayLetterPage(): { element: HTMLElement; onEnter: () => void; onLeave: () => void } {
+export function createBirthdayLetterPage(): { element: HTMLElement; onEnter: () => void } {
   const music = createMusicPlayer();
   const open = h('button', { class: 'btn', type: 'button' }, 'Open Your Letter');
 
@@ -73,6 +60,7 @@ export function createBirthdayLetterPage(): { element: HTMLElement; onEnter: () 
     { class: 'finale' },
     createCake(),
     h('h2', { class: 'finale__message' }, birthdayContent.finalMessage),
+    h('p', { class: 'finale__subtitle' }, birthdayContent.finalSubtitle),
   );
 
   const element = h(
@@ -86,8 +74,8 @@ export function createBirthdayLetterPage(): { element: HTMLElement; onEnter: () 
       h('p', { class: 'letter-prompt' }, 'One last page, just for you.'),
     ),
     h('div', { class: 'closed-view' }, scene, open),
-    h('div', { class: 'open-view' }, createSheet(), music.element, finale),
-    createPageTurn('things', null),
+    h('div', { class: 'open-view' }, createLetterSheet(), music.element, finale),
+    createPageTurn('memories', null),
   );
 
   const reveal = (): void => {
@@ -107,6 +95,5 @@ export function createBirthdayLetterPage(): { element: HTMLElement; onEnter: () 
   return {
     element,
     onEnter: () => music.prepare(),
-    onLeave: () => music.pause(),
   };
 }

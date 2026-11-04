@@ -15,7 +15,7 @@
   width: 100%;
   max-width: 24rem;
   margin-inline: auto;
-  padding: 0.85rem 0.85rem 1.25rem;
+  padding: 0.85rem;
   background: var(--paper);
   box-shadow: var(--shadow-soft);
   transform: rotate(var(--tilt));
@@ -80,59 +80,9 @@
 }
 
 .memory__photo img {
+  /* Each photograph keeps its own proportions: never cropped or stretched. */
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-
-.memory__placeholder {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 62%;
-  padding: 0 1rem;
-  font-family: var(--hand);
-  font-size: 1.5rem;
-  line-height: 1.1;
-  color: var(--text);
-  text-align: center;
-}
-
-.memory__text {
-  padding: 0.85rem 0.35rem 0;
-}
-
-.memory__title {
-  font-size: 1.45rem;
-  line-height: 1.2;
-}
-
-.memory__date {
-  margin-top: 0.15rem;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  color: var(--text-soft);
-}
-
-.memory__description {
-  margin-top: 0.5rem;
-  font-size: 0.98rem;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.memory__story {
-  display: -webkit-box;
-  margin-top: 0.35rem;
-  /* Keeps full lines of text clear of the pressed flower in the corner. */
-  padding-right: 2.5rem;
-  overflow: hidden;
-  font-size: 0.98rem;
-  line-height: 1.5;
-  color: var(--text-soft);
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  height: auto;
 }
 
 .lightbox {
@@ -170,29 +120,13 @@
   background: var(--background);
 }
 
-.lightbox__caption {
-  grid-column: 1;
-  grid-row: 2;
-  padding: 0.25rem 0.5rem 0.75rem;
-}
-
-.lightbox__description {
-  margin-top: 0.6rem;
-  font-weight: 600;
-}
-
-.lightbox__story {
-  margin-top: 0.75rem;
-  white-space: pre-line;
-}
-
-/* Sticky, so Close stays in reach while a long story is scrolled. */
+/* Sticky, so Close stays in reach on short screens. */
 .lightbox__close {
   position: sticky;
   z-index: 1;
   top: 0.5rem;
   grid-column: 1 / -1;
-  grid-row: 1 / span 2;
+  grid-row: 1;
   align-self: start;
   justify-self: end;
   margin: 0.5rem;
@@ -213,18 +147,10 @@
 
 @media (min-width: 768px) {
   .lightbox__frame {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: start;
     padding: 1.25rem;
   }
 
   .lightbox__image {
     max-height: calc(100dvh - 6rem);
-  }
-
-  .lightbox__caption {
-    grid-column: 2;
-    grid-row: 1;
-    padding-top: 3.25rem;
   }
 }

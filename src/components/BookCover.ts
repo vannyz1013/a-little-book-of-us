@@ -1,7 +1,7 @@
 import { asset, h, paint, prefersReducedMotion } from '../dom';
 import { goTo } from '../router';
 
-const TAGLINE = 'A little collection of moments, memories, and everything in between.';
+const TAGLINE = 'A little collection of moments and memories, made just for you.';
 const OPEN_MS = 1500;
 
 export function createBookCover(): { element: HTMLElement; onEnter: () => void } {
@@ -20,7 +20,7 @@ export function createBookCover(): { element: HTMLElement; onEnter: () => void }
         h(
           'div',
           { class: 'book__title' },
-          h('h1', { tabindex: -1 }, 'A Little', h('br'), 'Book of Us'),
+          h('h1', { tabindex: -1 }, 'A Little', h('br'), 'Book for You'),
           h('p', {}, TAGLINE),
         ),
       ),

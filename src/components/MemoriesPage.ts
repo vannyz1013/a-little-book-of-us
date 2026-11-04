@@ -8,7 +8,7 @@ import { createCorners, createPageHeading } from './PageHeading';
 export function createMemoriesPage(): HTMLElement {
   const lightbox = createLightbox();
   const cards = birthdayContent.memories.map((memory, index) =>
-    createMemoryCard(memory, index, () => lightbox.open(memory, index)),
+    createMemoryCard(memory, index, () => lightbox.open(memory)),
   );
 
   return h(
@@ -17,7 +17,7 @@ export function createMemoriesPage(): HTMLElement {
     ...createCorners(),
     createPageHeading('Our Memories', 'A little scrapbook of our moments.'),
     h('div', { class: 'scrapbook' }, ...cards),
-    createPageTurn('home', 'things'),
+    createPageTurn('home', 'letter'),
     lightbox.element,
   );
 }

@@ -12,18 +12,22 @@ export interface MusicPlayer {
   unlock(): void;
   /** Start the song from the top, audibly. Runs once the letter is revealed. */
   begin(): void;
-  /** Stop for now, keeping the place in the song. */
-  pause(): void;
 }
 
-/** One audio element for the life of the page, so the song can never double up. */
+/**
+ * One audio element for the life of the page, so the song can never double up.
+ * Once started it loops, and it keeps playing from scene to scene until the
+ * visitor pauses it: moving between pages never stops, restarts or resets it.
+ */
 export function createMusicPlayer(): MusicPlayer {
   const audio = h('audio', { preload: 'none', src: asset(SONG) });
+  audio.loop = true;
   let state: State = 'idle';
   let userMuted = false;
   // While unlocking it plays silently, so its events aren't the real start.
   let unlocking = false;
-  let visitorLeft = false;
+  let started = false;
+  if (new URLSearchParams(location.search).has('qa')) (window as unknown as Record<string, unknown>).__audio = audio;
 
   const toggle = h('button', { class: 'music__button', type: 'button' });
   const mute = h('button', { class: 'music__button', type: 'button' });
@@ -69,7 +73,6 @@ export function createMusicPlayer(): MusicPlayer {
   audio.addEventListener('pause', () => {
     if (!unlocking && state === 'playing') set('paused');
   });
-  audio.addEventListener('ended', () => set('paused'));
   audio.addEventListener('error', () => set('missing'));
 
   toggle.addEventListener('click', () => {
@@ -93,7 +96,6 @@ export function createMusicPlayer(): MusicPlayer {
   return {
     element,
     prepare() {
-      visitorLeft = false;
       if (audio.preload === 'auto') return;
       audio.preload = 'auto';
       audio.load();
@@ -107,18 +109,12 @@ export function createMusicPlayer(): MusicPlayer {
       unlocking = false;
       audio.muted = userMuted;
       if (state === 'missing' || state === 'blocked') return;
+      // Only the very first start begins at the top; after that the controls decide.
+      if (started) return;
+      started = true;
       audio.currentTime = 0;
-      if (visitorLeft) {
-        // They left during the envelope animation: stay silent until they ask.
-        audio.pause();
-        return set('paused');
-      }
       if (audio.paused) attempt();
       else set('playing');
-    },
-    pause() {
-      visitorLeft = true;
-      audio.pause();
     },
   };
 }
