@@ -660,6 +660,65 @@
   }
 }
 
+/*
+ * Wide screens: the two friends stand front and centre, right where the foot of the
+ * interface used to stack. The song's controls float in the top-right corner instead,
+ * and the letter button sits at the bottom right, mirroring the way back on the left.
+ * Tall screens keep their stacked foot: there it sits below the pair, and the open
+ * letter's framing is fitted to it (see letterBounds), so it must not move.
+ * 23/20 matches the scene's own wide/tall split (aspect > 1.15).
+ */
+@media (min-aspect-ratio: 23/20) {
+  .hud--letter .hud__music {
+    position: absolute;
+    /* Kept close under the nav so the envelope's top edge has room below it. */
+    top: calc(var(--nav-height) + 0.375rem);
+    right: max(var(--gutter), env(safe-area-inset-right));
+  }
+
+  /*
+   * The candle hint hangs in the open sky above the cake, centred over the candle it
+   * names, rather than at the foot where the friends stand. The candle sits about a
+   * third of the way down on every wide screen, so a fifth of the way down is just above it.
+   */
+  .hud--letter .hud__hint {
+    position: absolute;
+    top: max(calc(var(--nav-height) + 0.75rem), 20%);
+    right: 0;
+    left: 0;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .hud--letter .hud__foot > .btn {
+    position: absolute;
+    /* The page turn is centred at most 62rem wide; line up with its right-hand end. */
+    right: calc(var(--gutter) + max(0px, (100% - 2 * var(--gutter) - 62rem) / 2));
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+}
+
+/*
+ * Phones held sideways: too short for a row up top, and the envelope fills the right-hand
+ * corner, so the song's controls stack down the open left edge, under the way back.
+ */
+@media (min-aspect-ratio: 23/20) and (max-height: 500px) {
+  .hud--letter .hud__music {
+    /* Below the page turn link (nav + 0.5rem gap + its 48px touch height + 0.5rem). */
+    top: calc(var(--nav-height) + 1rem + 48px);
+    right: auto;
+    left: max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .hud--letter .hud__music .music__buttons {
+    flex-direction: column;
+  }
+
+  .hud--letter .hud__foot > .btn:last-of-type {
+    margin-right: 0;
+  }
+}
+
 
 /* On short screens, place the close action after the letter so it cannot cover the text. */
 @media (max-height: 680px) {
