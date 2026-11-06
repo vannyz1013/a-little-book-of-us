@@ -669,7 +669,8 @@
  * 23/20 matches the scene's own wide/tall split (aspect > 1.15).
  */
 @media (min-aspect-ratio: 23/20) {
-  .hud--letter .hud__music {
+  /* Every scene shows the music controls here once music is playing. */
+  .hud .hud__music {
     position: absolute;
     /* Kept close under the nav so the envelope's top edge has room below it. */
     top: calc(var(--nav-height) + 0.375rem);
@@ -699,19 +700,61 @@
 }
 
 /*
+ * Tall screens, before the letter is out: the pair stand just above the foot, so the music
+ * controls wait up in the sky under the nav instead of pushing the candle hint or the
+ * letter button onto them. Once the letter is open they return to the foot, where the open
+ * letter's framing expects them (see letterBounds).
+ */
+@media (max-aspect-ratio: 23/20) {
+  .hud--letter:not(.is-letter-opened) .hud__music {
+    position: absolute;
+    top: calc(var(--nav-height) + 0.375rem);
+    right: 0;
+    left: 0;
+    width: fit-content;
+    margin-inline: auto;
+  }
+}
+
+/*
  * Phones held sideways: too short for a row up top, and the envelope fills the right-hand
  * corner, so the song's controls stack down the open left edge, under the way back.
  */
 @media (min-aspect-ratio: 23/20) and (max-height: 500px) {
-  .hud--letter .hud__music {
+  .hud .hud__music {
     /* Below the page turn link (nav + 0.5rem gap + its 48px touch height + 0.5rem). */
     top: calc(var(--nav-height) + 1rem + 48px);
     right: auto;
     left: max(var(--gutter), env(safe-area-inset-left));
   }
 
-  .hud--letter .hud__music .music__buttons {
+  .hud .hud__music .music__buttons {
     flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  /*
+   * The memory frames fill the left edge here, so the controls sit in one row on the
+   * grass at the bottom, between the two page links.
+   */
+  .hud--inner:not(.hud--letter) .hud__music {
+    top: auto;
+    right: 0;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    left: 0;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
+  .hud--inner:not(.hud--letter) .hud__music .music__buttons {
+    flex-direction: row;
+  }
+
+  /* The same compact buttons in every scene as beside the cake. */
+  .hud .hud__music .music__button {
+    min-width: 4.25rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 1rem;
   }
 
   .hud--letter .hud__foot > .btn:last-of-type {

@@ -1,11 +1,11 @@
 // Encode the 16-bit stereo WAV from make_song.py to MP3.
 // One-off tool, deliberately not a project dependency:
 //   npm install --no-save @breezystack/lamejs
-//   node tools/song/encode_mp3.mjs in.wav public/audio/happy-birthday.mp3
+//   node tools/song/encode_mp3.mjs in.wav public/audio/happy-birthday.mp3 [kbps=128]
 import { readFileSync, writeFileSync } from 'node:fs';
 import { Mp3Encoder } from '@breezystack/lamejs';
 
-const [input, output] = process.argv.slice(2);
+const [input, output, kbps = '128'] = process.argv.slice(2);
 const wav = readFileSync(input);
 const dataAt = wav.indexOf('data') + 8;
 const pcm = new Int16Array(wav.buffer, wav.byteOffset + dataAt, (wav.length - dataAt) >> 1);
@@ -18,7 +18,7 @@ for (let i = 0; i < frames; i++) {
   right[i] = pcm[i * 2 + 1];
 }
 
-const encoder = new Mp3Encoder(2, 44100, 128);
+const encoder = new Mp3Encoder(2, 44100, Number(kbps));
 const chunks = [];
 for (let i = 0; i < frames; i += 1152) {
   chunks.push(encoder.encodeBuffer(left.subarray(i, i + 1152), right.subarray(i, i + 1152)));

@@ -65,6 +65,8 @@ export async function startWorld(root: HTMLElement): Promise<void> {
   };
 
   const music = createMusicPlayer();
+  // The soft opening theme starts on the visitor's first tap or key press, anywhere.
+  music.listenForFirstGesture();
   const lightbox = createLightbox('Back to the garden');
   let reading = false;
   const setReading = (value: boolean): void => {
@@ -84,12 +86,15 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     hud.openLetter.hidden = letterState !== 'lit' && letterState !== 'opened';
     hud.openLetter.textContent = letterState === 'opened' ? 'Read Your Letter' : 'Open Your Letter';
     hud.openLetter.disabled = false;
-    hud.musicSlot.hidden = letterState !== 'opened';
+    // Until the letter is out, tall screens keep the music controls up in the sky, off the pair.
+    hud.musicSlots.letter.closest('.hud')?.classList.toggle('is-letter-opened', letterState === 'opened');
     hud.setActions(interaction.items.filter((item) => item.page === director.current));
   };
 
   const lightCandle = async (): Promise<void> => {
     if (birthday.candle.lit) return;
+    // Still inside the tap, so the browser lets the birthday song begin.
+    music.celebrate();
     hud.candleHint.hidden = true;
     const glowing = birthday.candle.ignite((warmth) => {
       atmosphere.warmth = warmth;
@@ -130,7 +135,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
 
   const letterPanel = createLetterPanel(music.element, () => {
     setReading(false);
-    hud.musicSlot.append(music.element);
+    placeMusic();
     // Back at the cake, the letter stays out of its envelope, unfolded on the stand.
     if (letterState === 'opened' && !birthday.envelope.unfolded) {
       sceneState.letterOpen = true;
@@ -178,10 +183,20 @@ export async function startWorld(root: HTMLElement): Promise<void> {
   };
 
   const hud = createHud(shell, () => void openBook(), () => void openEnvelope());
-  hud.musicSlot.append(music.element);
+  /** The music controls sit in the current scene, once there is music to control. */
+  const placeMusic = (id: PageId = director.current): void => {
+    if (letterPanel.element.open) return; // The letter keeps them while it is open.
+    hud.musicSlots[id].append(music.element);
+  };
+  const showMusic = (): void => {
+    for (const slot of Object.values(hud.musicSlots)) slot.hidden = !music.started;
+  };
+  music.onChange(showMusic);
   shell.append(lightbox.element);
 
   const cinematic = new BirthdayCinematicUI(shell, (mode) => {
+    // Opening the gift moves to the birthday song too (once; a replay keeps it going).
+    if (mode === 'playing') music.celebrate();
     const active = mode !== 'hidden';
     interaction.blocked = active;
     if (active) interaction.reset();
@@ -208,6 +223,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
 
   const arrive = (id: PageId): void => {
     hud.show(id);
+    placeMusic(id);
     if (id === 'letter') {
       music.prepare();
       refreshLetterHud();

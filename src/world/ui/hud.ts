@@ -17,26 +17,31 @@ export function createHud(host: HTMLElement, onOpenBook: () => void, onOpenLette
   const openBook = h('button', { class: 'btn', type: 'button' }, 'Open the Book');
   const openLetter = h('button', { class: 'btn', type: 'button', hidden: true }, 'Open Your Letter');
   const candleHint = h('p', { class: 'hud__hint', hidden: true }, 'Tap the candle to light it');
-  const musicSlot = h('div', { class: 'hud__music' });
+  // Each scene has a place for the one set of music controls, which follows the visitor.
+  const musicSlots: Record<PageId, HTMLElement> = {
+    home: h('div', { class: 'hud__music', hidden: true }),
+    memories: h('div', { class: 'hud__music', hidden: true }),
+    letter: h('div', { class: 'hud__music', hidden: true }),
+  };
 
   const sections: Record<PageId, HTMLElement> = {
     home: h(
       'section',
       { class: 'hud hud--home' },
       h('h1', { class: 'sr-only', tabindex: -1 }, 'A Little Book for You'),
-      h('div', { class: 'hud__foot' }, openBook, h('p', { class: 'hud__signature' }, 'Made with love, just for you.')),
+      h('div', { class: 'hud__foot' }, musicSlots.home, openBook, h('p', { class: 'hud__signature' }, 'Made with love, just for you.')),
     ),
     memories: h(
       'section',
       { class: 'hud hud--inner' },
       h('header', { class: 'hud__heading' }, h('h1', { tabindex: -1 }, 'Our Memories'), h('p', {}, 'Choose a frame to step inside.')),
-      h('div', { class: 'hud__foot' }, createPageTurn('home', 'letter')),
+      h('div', { class: 'hud__foot' }, musicSlots.memories, createPageTurn('home', 'letter')),
     ),
     letter: h(
       'section',
       { class: 'hud hud--inner hud--letter' },
       h('h1', { class: 'sr-only', tabindex: -1 }, 'Birthday Letter'),
-      h('div', { class: 'hud__foot' }, candleHint, musicSlot, openLetter, createPageTurn('memories', null)),
+      h('div', { class: 'hud__foot' }, candleHint, musicSlots.letter, openLetter, createPageTurn('memories', null)),
     ),
   };
 
@@ -52,7 +57,7 @@ export function createHud(host: HTMLElement, onOpenBook: () => void, onOpenLette
     openBook,
     openLetter,
     candleHint,
-    musicSlot,
+    musicSlots,
     veil,
     show(id: PageId) {
       for (const [key, section] of Object.entries(sections)) section.hidden = key !== id;
