@@ -2,3 +2,7 @@ node_modules/
 dist/
 __pycache__/
 *.log
+
+# Local-only: QA screenshots, private docs and backups.
+qa-artifacts/
+docs/
