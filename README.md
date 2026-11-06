@@ -1,6 +1,8 @@
 # A Little Book of Us
 
-A handmade watercolour birthday book: a static site with four pages (cover, memories, little notes, and a birthday letter, with a soft opening theme that turns into Happy Birthday when the candle is lit).
+A handmade birthday gift: a small hand-painted 3D garden to wander through, with memories, little notes and a birthday letter. A soft opening theme plays, and lighting the candle turns it into Happy Birthday. Devices without WebGL get a flat watercolour book with the same pages.
+
+**<https://vannyz1013.github.io/a-little-book-of-us/>**
 
 ## Making it yours
 
