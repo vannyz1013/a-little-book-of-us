@@ -23,7 +23,7 @@ import type { WorldContext } from './scenes/context';
 import { createMemoryGarden } from './scenes/memoryGarden';
 import { createHud } from './ui/hud';
 import { createLetterPanel } from './ui/panels';
-import { BirthdayCinematicUI } from './ui/birthdayCinematic';
+import { BirthdayCinematicUI, type SurpriseMode } from './ui/birthdayCinematic';
 
 async function loadFonts(): Promise<void> {
   // Canvas text is drawn only once, so the fonts must be ready first.
@@ -76,13 +76,33 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     interaction.blocked = value;
     engine.dimmed = value;
     if (value) interaction.reset();
+    refreshCandleHint();
   };
 
   // ---- Birthday scene state ----
   let letterState: 'waiting' | 'lit' | 'opening' | 'opened' = 'waiting';
+  let surpriseMode: SurpriseMode = 'hidden';
+  /** Set once the birthday scene exists, before which nothing here can be asked about it. */
+  let birthdayReady = false;
+
+  /**
+   * "Tap the candle" is shown only while it can be acted on: resting in the birthday garden
+   * (not flying past the other scenes on the way), the candle still unlit, no surprise
+   * playing and nothing open over the scene.
+   */
+  const refreshCandleHint = (): void => {
+    if (!birthdayReady) return;
+    hud.candleHint.hidden = !(
+      director.current === 'letter' &&
+      !director.flying &&
+      !birthday.candle.lit &&
+      surpriseMode === 'hidden' &&
+      !reading
+    );
+  };
 
   const refreshLetterHud = (): void => {
-    hud.candleHint.hidden = letterState !== 'waiting';
+    refreshCandleHint();
     hud.openLetter.hidden = letterState !== 'lit' && letterState !== 'opened';
     hud.openLetter.textContent = letterState === 'opened' ? 'Read Your Letter' : 'Open Your Letter';
     hud.openLetter.disabled = false;
@@ -95,7 +115,6 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     if (birthday.candle.lit) return;
     // Still inside the tap, so the browser lets the birthday song begin.
     music.celebrate();
-    hud.candleHint.hidden = true;
     const glowing = birthday.candle.ignite((warmth) => {
       atmosphere.warmth = warmth;
       particles.warmth.value = warmth;
@@ -103,6 +122,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
       birthday.gazebo.lightUp(easeSoft(Math.min(warmth * 1.6, 1)));
       birthday.cake.warm(warmth);
     });
+    refreshCandleHint(); // The candle counts as lit from the tap.
     // A few sparkles drift up around the cake as its warmth spreads.
     magic.rise(birthday.cakeCentre.clone().setY(birthday.cakeCentre.y - 1.4), 2.4, 2.6, 16, 2.4);
     await engine.tweens.wait(1.1);
@@ -195,6 +215,8 @@ export async function startWorld(root: HTMLElement): Promise<void> {
   shell.append(lightbox.element);
 
   const cinematic = new BirthdayCinematicUI(shell, (mode) => {
+    surpriseMode = mode;
+    refreshCandleHint();
     // Opening the gift moves to the birthday song too (once; a replay keeps it going).
     if (mode === 'playing') music.celebrate();
     const active = mode !== 'hidden';
@@ -206,6 +228,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
   const beginning = await createBeginning(context, () => void openBook());
   const garden = await createMemoryGarden(context, (memory, frame) => void chooseMemory(memory, frame));
   const birthday = createBirthdayGarden(context, () => void lightCandle(), () => void openEnvelope(), () => hud.letterBounds(), cinematic);
+  birthdayReady = true;
   cinematic.skip.addEventListener('click', () => birthday.surprise.skip());
   cinematic.replay.addEventListener('click', () => birthday.surprise.replay());
   cinematic.back.addEventListener('click', () => birthday.surprise.backToCake());
@@ -227,6 +250,8 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     if (id === 'letter') {
       music.prepare();
       refreshLetterHud();
+      // The hint waits until the camera has landed in the garden.
+      void director.arrived().then(refreshCandleHint);
       // The screen may have turned while elsewhere: refit once the camera has arrived.
       if (sceneState.letterOpen) {
         void director.arrived().then(() => {
@@ -235,6 +260,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
       }
     } else {
       hud.setActions(interaction.items.filter((item) => item.page === id));
+      refreshCandleHint();
     }
   };
 
