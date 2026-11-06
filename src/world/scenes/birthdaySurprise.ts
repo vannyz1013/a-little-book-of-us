@@ -5,6 +5,7 @@ import { GiftBox } from '../objects/giftBox';
 import { Candle } from '../objects/candle';
 import type { Director } from '../core/director';
 import type { Engine } from '../core/engine';
+import { gardenSpread, giftSpot, isPortraitPhone, isShortLandscape } from '../layout';
 import type { BirthdayCinematicUI, SurpriseMode } from '../ui/birthdayCinematic';
 
 interface SurpriseOptions {
@@ -162,8 +163,7 @@ export class BirthdaySurprise {
   /** Keep the same two character roots beside the cake in the resting garden. */
   private placeGardenCharacters(): void {
     const { engine, munYi, ziNor } = this.options;
-    const portrait = engine.aspect < 0.78;
-    this.gardenSpread = portrait ? 0.78 : 1.0;
+    this.gardenSpread = gardenSpread(engine.aspect);
     this.gardenZ = 3.5;
 
     munYi.root.position.set(-this.gardenSpread, 0.35, this.gardenZ);
@@ -306,7 +306,7 @@ export class BirthdaySurprise {
     munYi.setWalking(false);
     this.flames.forEach((flame) => (flame.visible = false));
     this.options.gift.root.visible = true;
-    this.options.gift.root.position.set(engine.aspect > 1.15 ? -3.65 : -1.9, 0.37, 2.85);
+    giftSpot(engine.aspect, this.options.gift.root.position);
 
     engine.camera.getWorldDirection(this.cameraDirection);
     this.startCamera.copy(engine.camera.position);
@@ -517,7 +517,7 @@ export class BirthdaySurprise {
     if (!start) return;
     const setup = smooth(time / 2.2);
     const walk = smooth((time - 2.5) / 6.5);
-    const spread = this.options.engine.aspect < 0.78 ? 1.05 : 1.35;
+    const spread = isPortraitPhone(this.options.engine.aspect) ? 1.05 : 1.35;
     const carryX = 0.45;
     const presentationX = 0.38;
     let ziX = mix(start.ziNor.position.x, this.gardenSpread, setup);
@@ -621,20 +621,42 @@ export class BirthdaySurprise {
 
   private refreshCameraShots(): void {
     const { engine } = this.options;
-    if (Math.abs(engine.aspect - this.cameraShotAspect) < 0.0001) return;
-    this.cameraShotAspect = engine.aspect;
+    // Keyed on both aspect and height: short landscape screens get their own shots.
+    const key = engine.aspect + (isShortLandscape(engine.aspect, engine.height) ? 100 : 0);
+    if (Math.abs(key - this.cameraShotAspect) < 0.0001) return;
+    this.cameraShotAspect = key;
+    if (isPortraitPhone(engine.aspect)) {
+      // Portrait phones: fitting the wide shots' width would stand the camera far back
+      // and leave the pair small above an empty lawn. These widths frame only what each
+      // beat needs (the gift behind them and both friends, then the pair and the cake),
+      // centred between the message card above and the controls below.
+      this.setShot(this.cameraShots.entrance, 5.0, 5.3, 0.9, 0.3, -0.7, 2.0);
+      this.setShot(this.cameraShots.twoShot, 3.95, 4.65, 0.5, 0.9, -0.3, 2.0);
+      this.setShot(this.cameraShots.wish, 3.8, 3.95, 0.35, 0.9, -0.1, 2.0);
+      this.setShot(this.cameraShots.final, 3.95, 4.8, 0.45, 0.15, 0, 2.0);
+      return;
+    }
+    if (isShortLandscape(engine.aspect, engine.height)) {
+      // Phones held sideways: a little closer, with the pair framed in the band between
+      // the compact message card at the top and the controls at the foot.
+      this.setShot(this.cameraShots.entrance, 7.1, 5.0, 1.4, 0.85, 0.1, 1.85);
+      this.setShot(this.cameraShots.twoShot, 6.0, 4.2, 0.5, 1.75, 0.35, 1.8);
+      this.setShot(this.cameraShots.wish, 5.0, 3.9, 0.35, 1.75, 0.35, 1.8);
+      this.setShot(this.cameraShots.final, 6.2, 4.4, 0.5, 0.15, 0, 1.8);
+      return;
+    }
     this.setShot(this.cameraShots.entrance, 7.1, 5.3, 1.9, 0.85, 0.1);
     this.setShot(this.cameraShots.twoShot, 6.0, 4.65, 0.78, 1.75, 0.35);
     this.setShot(this.cameraShots.wish, 5.0, 3.95, 0.4, 1.75, 0.35);
-    this.setShot(this.cameraShots.final, engine.aspect < 0.78 ? 4.5 : 6.2, 4.8, 0.75);
+    this.setShot(this.cameraShots.final, 6.2, 4.8, 0.75);
   }
 
-  private setShot(shot: CameraShot, width: number, height: number, extraDistance: number, cameraX = 0.15, targetX = 0): void {
+  private setShot(shot: CameraShot, width: number, height: number, extraDistance: number, cameraX = 0.15, targetX = 0, targetY = 1.68): void {
     const distance = Math.max(
       height / (2 * Math.tan(THREE.MathUtils.degToRad(this.options.engine.camera.fov / 2))),
       width / (2 * Math.tan(THREE.MathUtils.degToRad(this.options.engine.camera.fov / 2)) * this.options.engine.aspect),
     ) + extraDistance;
-    shot.target.set(targetX, 1.68, 2.08).add(this.options.centre);
+    shot.target.set(targetX, targetY, 2.08).add(this.options.centre);
     shot.position.set(cameraX, 3.65, 2.08 + distance).add(this.options.centre);
   }
 

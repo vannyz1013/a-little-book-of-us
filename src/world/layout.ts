@@ -28,6 +28,28 @@ const TALL_OPEN = { eye: 1.5, target: -2.05 };
 const SHORT_OPEN = { eye: 1.0, target: -1.35 };
 export const isShortScreen = (): boolean => window.innerHeight < 720;
 
+/**
+ * Narrow portrait screens (phones held upright). Here the friends stand a little further
+ * apart, either side of the envelope and the open letter, instead of behind them.
+ */
+export const isPortraitPhone = (aspect: number): boolean => aspect < 0.78;
+
+/** Phones held sideways: wide, and too short for the usual stacked interface (matches the CSS rule). */
+export const isShortLandscape = (aspect: number, height: number): boolean => aspect > 1.15 && height <= 500;
+
+/** How far either friend stands from the middle of the birthday garden. */
+export const gardenSpread = (aspect: number): number => (isPortraitPhone(aspect) ? 1.5 : 1.0);
+
+/**
+ * Where the gift rests in the birthday garden (local to the scene). On portrait phones it
+ * waits on the floor behind and to the left of the cake, clear of the two friends standing
+ * at the front; elsewhere it keeps its place at the front left.
+ */
+export function giftSpot(aspect: number, target = new THREE.Vector3()): THREE.Vector3 {
+  if (isPortraitPhone(aspect)) return target.set(-2.6, 0.37, -1.3);
+  return target.set(aspect > 1.15 ? -3.65 : -1.9, 0.37, 2.85);
+}
+
 export interface Pose {
   position: THREE.Vector3;
   target: THREE.Vector3;

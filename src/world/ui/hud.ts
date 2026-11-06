@@ -70,7 +70,10 @@ export function createHud(host: HTMLElement, onOpenBook: () => void, onOpenLette
       const foot = section.querySelector<HTMLElement>('.hud__foot')!.getBoundingClientRect();
       const box = nav.element.getBoundingClientRect();
       if (!foot.height || !box.height) return null;
-      return { top: box.bottom, bottom: foot.top };
+      // Music controls lifted up under the nav count as part of the top bar.
+      const music = musicSlots.letter.getBoundingClientRect();
+      const top = music.height && music.bottom <= foot.top ? Math.max(box.bottom, music.bottom) : box.bottom;
+      return { top, bottom: foot.top };
     },
     focusHeading(id: PageId) {
       sections[id].querySelector<HTMLElement>('h1')?.focus({ preventScroll: true });

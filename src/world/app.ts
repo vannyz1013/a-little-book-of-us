@@ -106,8 +106,6 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     hud.openLetter.hidden = letterState !== 'lit' && letterState !== 'opened';
     hud.openLetter.textContent = letterState === 'opened' ? 'Read Your Letter' : 'Open Your Letter';
     hud.openLetter.disabled = false;
-    // Until the letter is out, tall screens keep the music controls up in the sky, off the pair.
-    hud.musicSlots.letter.closest('.hud')?.classList.toggle('is-letter-opened', letterState === 'opened');
     hud.setActions(interaction.items.filter((item) => item.page === director.current));
   };
 
@@ -220,6 +218,7 @@ export async function startWorld(root: HTMLElement): Promise<void> {
     // Opening the gift moves to the birthday song too (once; a replay keeps it going).
     if (mode === 'playing') music.celebrate();
     const active = mode !== 'hidden';
+    if (birthdayReady) birthday.setSurpriseActive(active);
     interaction.blocked = active;
     if (active) interaction.reset();
     else if (director.current === 'letter') hud.setActions(interaction.items.filter((item) => item.page === director.current));
@@ -346,6 +345,26 @@ export async function startWorld(root: HTMLElement): Promise<void> {
       replaySurprise: () => birthday.surprise.replay(),
       backToCake: () => birthday.surprise.backToCake(0),
       magic: () => magic.stats(),
+      /** Screen boxes (CSS px: x0, y0, x1, y1) of the pair, the cake, the gift and the envelope. */
+      charactersOnScreen: () => {
+        const box = new THREE.Box3();
+        const corner = new THREE.Vector3();
+        const rect = (object: THREE.Object3D) => {
+          if (!object.visible) return null;
+          box.setFromObject(object);
+          if (box.isEmpty()) return null;
+          let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+          for (let i = 0; i < 8; i++) {
+            corner.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(engine.camera);
+            const x = ((corner.x + 1) / 2) * engine.width;
+            const y = ((1 - corner.y) / 2) * engine.height;
+            x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+          }
+          return [x0, y0, x1, y1].map(Math.round);
+        };
+        const [munYi, ziNor] = birthday.surprise.characters.children;
+        return { munYi: rect(munYi), ziNor: rect(ziNor), cake: rect(birthday.cake.root), gift: rect(birthday.gift.root), envelope: rect(birthday.envelope.root) };
+      },
       letterRect: () => ({ ...birthday.onScreen(), bounds: hud.letterBounds(), fit: sceneState.fit }),
       /** Triangles per visible mesh (one camera pass, before shadows), largest first. */
       breakdown: () => {

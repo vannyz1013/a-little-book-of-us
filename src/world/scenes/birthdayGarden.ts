@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createButterflies, type Swarm } from '../env/butterflies';
 import { plantGrove } from '../env/trees';
 import { plantPatch } from '../env/vegetation';
-import { CENTRES, fitDistance, isShortScreen, poseFor, sceneState, type LetterFit } from '../layout';
+import { CENTRES, fitDistance, giftSpot, isShortScreen, poseFor, sceneState, type LetterFit } from '../layout';
 import type { LetterBounds } from '../ui/hud';
 import type { BirthdayCinematicUI } from '../ui/birthdayCinematic';
 import { Cake, CAKE_TOP } from '../objects/cake';
@@ -53,6 +53,8 @@ export interface BirthdayScene {
   gift: GiftBox;
   surprise: BirthdaySurprise;
   layout: (smooth?: boolean) => void;
+  /** The surprise takes, or gives back, the stage in front of the cake. */
+  setSurpriseActive: (active: boolean) => void;
   onScreen: () => { letterTop: number; letterTextBottom: number; cakeFront: number; candleTop: number };
 }
 
@@ -266,9 +268,10 @@ export function createBirthdayGarden(
   };
 
   const layout = (smooth = false): void => {
+    // A phone turned mid-surprise: the envelope follows the new screen's rule.
+    envelope.setAside(surprise.state !== 'hidden' && engine.aspect <= 1.15);
     // Keep the tappable surprise inside the narrower portrait composition.
-    gift.root.position.x = engine.aspect > 1.15 ? -3.65 : -1.9;
-    gift.root.position.z = 2.85;
+    giftSpot(engine.aspect, gift.root.position);
     if (engine.aspect <= 1.15 && sceneState.letterOpen) {
       const before = JSON.stringify(sceneState.fit);
       const placement = tallOpenPlacement();
@@ -336,5 +339,10 @@ export function createBirthdayGarden(
     };
   };
 
-  return { group, cake, candle, envelope, gazebo, swarm, cakeCentre, gift, surprise, layout, onScreen };
+  // On tall screens the envelope stands in front of the cake, right where the surprise
+  // camera looks, so it is tucked away while the surprise plays. Wide screens keep it
+  // on its pedestal beside the cake, clear of the shot.
+  const setSurpriseActive = (active: boolean): void => envelope.setAside(active && engine.aspect <= 1.15);
+
+  return { group, cake, candle, envelope, gazebo, swarm, cakeCentre, gift, surprise, layout, setSurpriseActive, onScreen };
 }

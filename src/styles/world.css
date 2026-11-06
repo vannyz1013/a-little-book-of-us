@@ -421,23 +421,93 @@
   visibility: hidden;
 }
 
+/*
+ * The letter panel always fits the visible screen, between the safe areas and whatever
+ * the browser's own bars leave (dvh follows them as they expand and collapse; vh is the
+ * fallback). The paper keeps its full design and shrinks only in height: when it is
+ * shorter than the letter, the writing scrolls inside the double border, and the
+ * song's controls and the way back stay put below it.
+ */
 .letter-panel {
+  --panel-top: max(0.5rem, env(safe-area-inset-top));
+  --panel-bottom: max(0.5rem, env(safe-area-inset-bottom));
   width: min(40rem, 100vw - 1.5rem);
+  max-height: calc(100vh - var(--panel-top) - var(--panel-bottom));
+  max-height: calc(100dvh - var(--panel-top) - var(--panel-bottom));
   padding: 1rem 0 0;
   background: transparent;
   box-shadow: none;
+  overscroll-behavior: contain;
+}
+
+.letter-panel[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .letter-panel .letter {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
   width: 100%;
+  /* Never so short that only a line or two shows; the panel itself scrolls below this. */
+  min-height: 15rem;
   animation: none;
 }
 
+.letter-panel .letter__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  /* A little room either side so the scrollbar never sits on the words. */
+  margin-inline: -0.4rem;
+  padding-inline: 0.4rem;
+  overflow-y: hidden;
+  overscroll-behavior: contain;
+  scrollbar-color: rgb(184 168 230 / 0.7) transparent;
+  scrollbar-width: thin;
+}
+
+.letter-panel .letter.is-scrollable .letter__body {
+  overflow-y: auto;
+}
+
+.letter-panel .letter.has-more-below .letter__body {
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 2.25rem), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 2.25rem), transparent);
+}
+
+.letter-panel .letter.has-more-above .letter__body {
+  -webkit-mask-image: linear-gradient(transparent, #000 1.75rem);
+  mask-image: linear-gradient(transparent, #000 1.75rem);
+}
+
+.letter-panel .letter.has-more-above.has-more-below .letter__body {
+  -webkit-mask-image: linear-gradient(transparent, #000 1.75rem, #000 calc(100% - 2.25rem), transparent);
+  mask-image: linear-gradient(transparent, #000 1.75rem, #000 calc(100% - 2.25rem), transparent);
+}
+
 /* The song's controls and the way back sit apart from the letter, on the backdrop. */
+.letter-panel__actions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 0 0.25rem;
+}
+
 .letter-panel__music {
   display: flex;
   justify-content: center;
-  margin-top: 1.1rem;
+}
+
+.letter-panel__music:empty {
+  display: none;
+}
+
+.letter-panel .panel__close {
+  position: static;
+  margin: 0;
 }
 
 .letter-panel__music .music {
@@ -635,6 +705,34 @@
   }
 }
 
+/* Phones held sideways: a compact card along the top, so the pair below it stay in view. */
+@media (min-aspect-ratio: 23/20) and (max-height: 500px) {
+  .birthday-cinematic {
+    padding-top: max(0.6rem, env(safe-area-inset-top));
+  }
+
+  .birthday-cinematic__copy {
+    grid-template-rows: minmax(1rem, auto) minmax(1.9rem, auto) minmax(1.4rem, auto);
+    gap: 0;
+    width: min(100%, 32rem);
+    min-height: 5.6rem;
+    padding: 0.4rem 1rem;
+    border-radius: 1rem;
+  }
+
+  .birthday-cinematic__message {
+    font-size: 0.78rem;
+  }
+
+  .birthday-cinematic__message--2 {
+    font-size: 1.75rem;
+  }
+
+  .birthday-cinematic__message--3 {
+    font-size: 1.3rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .birthday-cinematic__copy,
   .birthday-cinematic__message {
@@ -700,13 +798,12 @@
 }
 
 /*
- * Tall screens, before the letter is out: the pair stand just above the foot, so the music
- * controls wait up in the sky under the nav instead of pushing the candle hint or the
- * letter button onto them. Once the letter is open they return to the foot, where the open
- * letter's framing expects them (see letterBounds).
+ * Tall screens: the pair, the envelope and the open letter fill the lower half, so the music
+ * controls wait up in the sky under the nav rather than in the foot, over the pair. The open
+ * letter's framing counts them as part of the top bar (see letterBounds).
  */
 @media (max-aspect-ratio: 23/20) {
-  .hud--letter:not(.is-letter-opened) .hud__music {
+  .hud--letter .hud__music {
     position: absolute;
     top: calc(var(--nav-height) + 0.375rem);
     right: 0;
@@ -763,10 +860,37 @@
 }
 
 
-/* On short screens, place the close action after the letter so it cannot cover the text. */
-@media (max-height: 680px) {
-  .letter-panel > .panel__close {
-    position: static;
+/* Phones held sideways: a shorter margin on the paper, and the actions share one row. */
+@media (max-height: 500px) {
+  .letter-panel {
+    padding-top: 0.85rem;
+  }
+
+  .letter-panel .letter {
+    padding-block: 1.9rem 1.4rem;
+  }
+
+  .letter-panel__actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem 0.75rem;
+    padding-top: 0.6rem;
+  }
+
+  .letter-panel__music .music {
+    padding: 0.25rem 0.4rem;
+  }
+
+  .letter-panel__music .music__buttons {
+    flex-wrap: nowrap;
+    gap: 0.4rem;
+  }
+
+  .letter-panel__music .music__button {
+    min-width: 4.25rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 1rem;
   }
 }
 

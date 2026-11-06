@@ -129,6 +129,9 @@ export class LetterEnvelope {
   private hoverTarget = 0;
   private near = 0;
   private nearTarget = 0;
+  /** 0 in its place, 1 tucked away (shrunk out of sight) while the surprise has the stage. */
+  private aside = 0;
+  private asideTarget = 0;
   private readonly home = new THREE.Vector3();
   opened = false;
   unfolded = false;
@@ -316,8 +319,25 @@ export class LetterEnvelope {
     return this.root.visible;
   }
 
+  /**
+   * Tucks the envelope out of the camera's way, or brings it back. Used on tall screens,
+   * where it stands in front of the cake, while the surprise plays.
+   */
+  setAside(aside: boolean): void {
+    this.asideTarget = aside ? 1 : 0;
+    if (this.engine.reducedMotion) this.aside = this.asideTarget;
+    this.engine.invalidate();
+  }
+
   private update(dt: number, time: number): void {
     if (!this.root.visible) return;
+    if (this.aside !== this.asideTarget) {
+      const step = Math.min(Math.max(dt, 1 / 60) / 0.45, 1);
+      this.aside = this.asideTarget > this.aside ? Math.min(this.aside + step, 1) : Math.max(this.aside - step, 0);
+    }
+    const tucked = Math.max(1 - this.aside * this.aside * (3 - 2 * this.aside), 0.001);
+    if (this.body.scale.x !== tucked) this.body.scale.setScalar(tucked);
+    this.body.visible = this.aside < 1;
     this.hover += (this.hoverTarget - this.hover) * (1 - Math.exp(-dt * 7));
     this.near += (this.nearTarget - this.near) * (1 - Math.exp(-dt * 5));
     // It drifts down and comes to rest on its stand; only a gentle sway remains.
